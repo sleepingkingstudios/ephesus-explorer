@@ -15,6 +15,9 @@ Metrics/BlockLength:
 RSpec/ExampleWording:
   Enabled: false
 
+RSpec/HookArgument:
+  Enabled: false
+
 Style/ClassAndModuleChildren:
   # Checks the style of children definitions at classes and modules.
   #
