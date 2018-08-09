@@ -7,3 +7,21 @@ AllCops:
 
 Layout/AlignParameters:
   EnforcedStyle: with_fixed_indentation
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*.rb'
+
+RSpec/ExampleWording:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  # Checks the style of children definitions at classes and modules.
+  #
+  # Our preferred style is compact-plus-one, which does not match any of the
+  # existing styles, so we disable this cop.
+  Enabled: false
+
+Style/TrailingUnderscoreVariable:
+  # Prefer more explicit syntax when ignoring destructured results.
+  Enabled: false
