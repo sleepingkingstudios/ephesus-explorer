@@ -1,0 +1,9 @@
+require:
+  - rubocop-rspec
+  - ./spec/support/rubocop_patch
+
+AllCops:
+  TargetRubyVersion: 2.4
+
+Layout/AlignParameters:
+  EnforcedStyle: with_fixed_indentation
