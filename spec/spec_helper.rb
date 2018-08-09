@@ -52,7 +52,7 @@ RSpec.configure do |config|
   config.example_status_persistence_file_path = 'spec/examples.txt'
 
   # This setting enables warnings.
-  config.warnings = true
+  config.warnings = false
 
   # Print the 10 slowest examples and example groups.
   config.profile_examples = 10 if ENV['CI']

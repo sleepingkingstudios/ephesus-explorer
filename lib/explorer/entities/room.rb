@@ -9,5 +9,9 @@ module Explorer::Entities
   # current location.
   class Room < Bronze::Entities::Entity
     attribute :description, String
+
+    has_many :exits,
+      class_name: 'Explorer::Entities::RoomExit',
+      inverse:    :origin
   end
 end

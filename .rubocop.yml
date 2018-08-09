@@ -8,6 +8,13 @@ AllCops:
 Layout/AlignParameters:
   EnforcedStyle: with_fixed_indentation
 
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*.rb'
+
+RSpec/ExampleWording:
+  Enabled: false
+
 Style/ClassAndModuleChildren:
   # Checks the style of children definitions at classes and modules.
   #
