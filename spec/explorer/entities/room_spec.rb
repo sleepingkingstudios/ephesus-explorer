@@ -20,7 +20,8 @@ RSpec.describe Explorer::Entities::Room do
   let(:attributes) do
     {
       description: 'A fairly non-descript room.',
-      exits:       exits
+      exits:       exits,
+      name:        'example_room'
     }
   end
 
@@ -46,5 +47,11 @@ RSpec.describe Explorer::Entities::Room do
         end
       end
     end
+  end
+
+  describe '#name' do
+    include_examples 'should have property',
+      :name,
+      -> { be == attributes[:name] }
   end
 end

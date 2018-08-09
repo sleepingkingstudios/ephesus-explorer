@@ -21,3 +21,7 @@ Style/ClassAndModuleChildren:
   # Our preferred style is compact-plus-one, which does not match any of the
   # existing styles, so we disable this cop.
   Enabled: false
+
+Style/TrailingUnderscoreVariable:
+  # Prefer more explicit syntax when ignoring destructured results.
+  Enabled: false
