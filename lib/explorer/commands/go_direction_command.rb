@@ -3,26 +3,16 @@
 require 'bronze/errors'
 require 'cuprum/command'
 
-require 'explorer/commands'
+require 'explorer/commands/abstract_command'
 
 module Explorer::Commands
   # Given an Explorer session and a direction, checks whether the current room
   # has an exit in the given direction and if so, updates the current room.
-  class GoDirectionCommand < Cuprum::Command
+  class GoDirectionCommand < Explorer::Commands::AbstractCommand
     NO_DIRECTION_PRESENT_ERROR = 'must specify a direction'
     NO_MATCHING_EXIT_ERROR     = 'no matching exit'
 
-    def initialize(session)
-      @session = session
-    end
-
-    attr_reader :session
-
     private
-
-    def build_errors
-      Bronze::Errors.new
-    end
 
     def check_direction_present?(direction)
       return true if direction
