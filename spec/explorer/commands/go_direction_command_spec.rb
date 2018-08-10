@@ -50,6 +50,8 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
         expect(instance.call.errors)
           .to include described_class::NO_DIRECTION_PRESENT_ERROR
       end
+
+      it { expect(instance.call.value).to be session }
     end
 
     context 'when the session has no current room' do
@@ -80,6 +82,8 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
         expect(instance.call(direction: direction).errors)
           .to include expected_error
       end
+
+      it { expect(instance.call.value).to be session }
 
       it 'should not change the current room' do
         expect { instance.call(direction: direction) }
@@ -113,6 +117,8 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
         expect(instance.call(direction: direction).errors)
           .to include expected_error
       end
+
+      it { expect(instance.call.value).to be session }
 
       it 'should not change the current room' do
         expect { instance.call(direction: direction) }
@@ -171,6 +177,8 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
       it { expect(instance.call(direction: direction).success?).to be true }
 
       it { expect(instance.call(direction: direction).errors).to be_empty }
+
+      it { expect(instance.call.value).to be session }
 
       it 'should set the current room' do
         expect { instance.call(direction: direction) }

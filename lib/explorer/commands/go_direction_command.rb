@@ -39,17 +39,19 @@ module Explorer::Commands
     end
 
     def process(direction: nil)
-      return nil unless check_direction_present?(direction)
+      return session unless check_direction_present?(direction)
 
       raise 'invalid session - no current room' unless current_room
 
       matching_exit = find_exit(direction: direction)
 
       unless check_matching_exit_exists?(matching_exit, direction: direction)
-        return nil
+        return session
       end
 
       update_current_room(room_exit: matching_exit)
+
+      session
     end
 
     def update_current_room(room_exit:)
