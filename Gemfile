@@ -4,6 +4,8 @@ source 'https://rubygems.org'
 
 gem 'bronze', git: 'https://github.com/sleepingkingstudios/bronze'
 
+gem 'cuprum', git: 'https://github.com/sleepingkingstudios/cuprum'
+
 gem 'patina', git: 'https://github.com/sleepingkingstudios/bronze'
 
 group :development, :test do

@@ -28,6 +28,10 @@ Style/ClassAndModuleChildren:
   # existing styles, so we disable this cop.
   Enabled: false
 
+Style/NestedParenthesizedCalls:
+  Exclude:
+    - 'spec/**/*.rb'
+
 Style/TrailingUnderscoreVariable:
   # Prefer more explicit syntax when ignoring destructured results.
   Enabled: false
