@@ -38,7 +38,7 @@ module Explorer::Commands
       current_room.exits.find { |room_exit| room_exit.direction == direction }
     end
 
-    def process(direction: nil)
+    def process(direction = nil)
       return session unless check_direction_present?(direction)
 
       raise 'invalid session - no current room' unless current_room

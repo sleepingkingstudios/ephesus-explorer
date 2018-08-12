@@ -10,6 +10,13 @@ GIT
       bronze (~> 0.0)
 
 GIT
+  remote: https://github.com/sleepingkingstudios/cuprum
+  revision: 82793bb63199cbab40d1c6e0473c841dde70224a
+  specs:
+    cuprum (0.7.0)
+      sleeping_king_studios-tools (~> 0.7)
+
+GIT
   remote: https://github.com/sleepingkingstudios/sleeping_king_studios-tasks
   revision: 550f9c37dfc1645f56e53b370cdbf043a571c4df
   specs:
@@ -24,7 +31,6 @@ GEM
   specs:
     ast (2.4.0)
     byebug (9.0.6)
-    cuprum (0.7.0)
     diff-lcs (1.3)
     docile (1.3.1)
     erubi (1.7.1)
@@ -79,6 +85,7 @@ PLATFORMS
 DEPENDENCIES
   bronze!
   byebug (~> 9.0.5, ~> 9.0)
+  cuprum!
   patina!
   rspec (~> 3.8)
   rspec-sleeping_king_studios (~> 2.3.0)

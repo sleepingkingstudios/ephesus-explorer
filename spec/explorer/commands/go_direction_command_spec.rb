@@ -58,7 +58,7 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
       before(:example) { session.current_room = nil }
 
       it 'should raise an error' do
-        expect { instance.call(direction: direction) }
+        expect { instance.call(direction) }
           .to raise_error RuntimeError, 'invalid session - no current room'
       end
     end
@@ -76,17 +76,17 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
 
       before(:example) { session.current_room = current_room }
 
-      it { expect(instance.call(direction: direction).success?).to be false }
+      it { expect(instance.call(direction).success?).to be false }
 
       it 'should set the error' do
-        expect(instance.call(direction: direction).errors)
+        expect(instance.call(direction).errors)
           .to include expected_error
       end
 
       it { expect(instance.call.value).to be session }
 
       it 'should not change the current room' do
-        expect { instance.call(direction: direction) }
+        expect { instance.call(direction) }
           .not_to change(session, :current_room)
       end
     end
@@ -111,17 +111,17 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
 
       before(:example) { session.current_room = current_room }
 
-      it { expect(instance.call(direction: direction).success?).to be false }
+      it { expect(instance.call(direction).success?).to be false }
 
       it 'should set the error' do
-        expect(instance.call(direction: direction).errors)
+        expect(instance.call(direction).errors)
           .to include expected_error
       end
 
       it { expect(instance.call.value).to be session }
 
       it 'should not change the current room' do
-        expect { instance.call(direction: direction) }
+        expect { instance.call(direction) }
           .not_to change(session, :current_room)
       end
     end
@@ -146,7 +146,7 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
       end
 
       it 'should raise an error' do
-        expect { instance.call(direction: direction) }
+        expect { instance.call(direction) }
           .to raise_error RuntimeError,
             "invalid room exit #{matching_exit.id} - no target room"
       end
@@ -174,14 +174,14 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
         matching_exit.target = target_room
       end
 
-      it { expect(instance.call(direction: direction).success?).to be true }
+      it { expect(instance.call(direction).success?).to be true }
 
-      it { expect(instance.call(direction: direction).errors).to be_empty }
+      it { expect(instance.call(direction).errors).to be_empty }
 
       it { expect(instance.call.value).to be session }
 
       it 'should set the current room' do
-        expect { instance.call(direction: direction) }
+        expect { instance.call(direction) }
           .to change(session, :current_room)
           .to(target_room)
       end
