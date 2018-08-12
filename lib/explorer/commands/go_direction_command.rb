@@ -3,12 +3,14 @@
 require 'bronze/errors'
 require 'cuprum/command'
 
-require 'explorer/commands/abstract_command'
+require 'ephesus/core/action'
+
+require 'explorer/commands'
 
 module Explorer::Commands
   # Given an Explorer session and a direction, checks whether the current room
   # has an exit in the given direction and if so, updates the current room.
-  class GoDirectionCommand < Explorer::Commands::AbstractCommand
+  class GoDirectionCommand < Ephesus::Core::Action
     NO_DIRECTION_PRESENT_ERROR = 'must specify a direction'
     NO_MATCHING_EXIT_ERROR     = 'no matching exit'
 

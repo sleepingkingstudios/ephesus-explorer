@@ -3,12 +3,12 @@
 require 'bronze/errors'
 require 'cuprum/command'
 
-require 'explorer/commands'
+require 'ephesus/core'
 
-module Explorer::Commands
+module Ephesus::Core
   # Abstract base class for Ephesus actions. Takes and stores a session object
   # representing the current game state.
-  class AbstractCommand < Cuprum::Command
+  class Action < Cuprum::Command
     def initialize(session)
       @session = session
     end

@@ -1,23 +1,20 @@
 # frozen_string_literal: true
 
+require 'ephesus/core/action'
 require 'ephesus/core/controller'
-
-require 'explorer/commands/abstract_command'
-require 'explorer/session'
 
 RSpec.describe Ephesus::Core::Controller do
   shared_context 'when an action is defined' do
     let(:described_class) { Spec::ExampleController }
     let(:action_name)     { :do_something }
-    let(:action_class)    { Spec::ExampleCommand }
+    let(:action_class)    { Spec::ExampleAction }
 
     # rubocop:disable RSpec/DescribedClass
     example_class 'Spec::ExampleController',
       base_class: Ephesus::Core::Controller
     # rubocop:enable RSpec/DescribedClass
 
-    example_class 'Spec::ExampleCommand',
-      base_class: Explorer::Commands::AbstractCommand
+    example_class 'Spec::ExampleAction', base_class: Ephesus::Core::Action
 
     before(:example) do
       described_class.action action_name, action_class
@@ -26,10 +23,10 @@ RSpec.describe Ephesus::Core::Controller do
 
   shared_context 'when the action takes arguments' do
     let(:action_name)     { :do_something_else }
-    let(:action_class)    { Spec::ExampleCommandWithArgs }
+    let(:action_class)    { Spec::ExampleActionWithArgs }
 
-    example_class 'Spec::ExampleCommandWithArgs',
-      base_class: Explorer::Commands::AbstractCommand \
+    example_class 'Spec::ExampleActionWithArgs',
+      base_class: Ephesus::Core::Action \
     do |klass|
       klass.send :define_method, :initialize do |session, *rest|
         super(session)
@@ -43,11 +40,9 @@ RSpec.describe Ephesus::Core::Controller do
 
   subject(:instance) { described_class.new(session) }
 
-  let(:session) { Spec::ExplorerSession.new }
+  let(:session) { Spec::ExampleSession.new }
 
-  example_class 'Spec::ExplorerSession' do |klass|
-    klass.send(:include, Explorer::Session)
-  end
+  example_class 'Spec::ExampleSession'
 
   describe '::new' do
     it { expect(described_class).to be_constructible.with(1).argument }

@@ -1,18 +1,13 @@
 # frozen_string_literal: true
 
-require 'explorer/commands/abstract_command'
-require 'explorer/entities/room'
-require 'explorer/entities/room_exit'
-require 'explorer/session'
+require 'ephesus/core/action'
 
-RSpec.describe Explorer::Commands::AbstractCommand do
+RSpec.describe Ephesus::Core::Action do
   subject(:instance) { described_class.new(session) }
 
   let(:session) { Spec::ExampleSession.new }
 
-  example_class 'Spec::ExampleSession' do |klass|
-    klass.send(:include, Explorer::Session)
-  end
+  example_class 'Spec::ExampleSession'
 
   describe '::new' do
     it { expect(described_class).to be_constructible.with(1).argument }
