@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
-require 'explorer/abstract_controller'
+require 'ephesus/core/controller'
+
 require 'explorer/commands/abstract_command'
 require 'explorer/session'
 
-RSpec.describe Explorer::AbstractController do
+RSpec.describe Ephesus::Core::Controller do
   shared_context 'when an action is defined' do
     let(:described_class) { Spec::ExampleController }
     let(:action_name)     { :do_something }
@@ -12,7 +13,7 @@ RSpec.describe Explorer::AbstractController do
 
     # rubocop:disable RSpec/DescribedClass
     example_class 'Spec::ExampleController',
-      base_class: Explorer::AbstractController
+      base_class: Ephesus::Core::Controller
     # rubocop:enable RSpec/DescribedClass
 
     example_class 'Spec::ExampleCommand',

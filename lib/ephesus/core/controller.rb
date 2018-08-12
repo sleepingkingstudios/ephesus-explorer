@@ -2,12 +2,12 @@
 
 require 'cuprum/command_factory'
 
-require 'explorer'
+require 'ephesus/core'
 
-module Explorer
+module Ephesus::Core
   # Abstract base class for Ephesus controllers. Define actions that permit a
   # user to interact with the game state.
-  class AbstractController < Cuprum::CommandFactory
+  class Controller < Cuprum::CommandFactory
     class << self
       def action(name, action_class)
         command(name) do |*args, &block|
