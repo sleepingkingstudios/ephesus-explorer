@@ -7,11 +7,11 @@ require 'explorer/session'
 
 RSpec.describe Explorer::Controller do
   subject(:instance) do
-    described_class.new(session, event_dispatcher: event_dispatcher)
+    described_class.new(context, event_dispatcher: event_dispatcher)
   end
 
-  let(:session)          { Spec::ExplorerSession.new }
-  let(:event_dispatcher) { Ephesus::Core::EventDispatcher.new }
+  let(:context)          { Spec::ExplorerSession.new }
+  let(:event_dispatcher) { Ephesus::Core::EventDispatcher }
 
   example_class 'Spec::ExplorerSession' do |klass|
     klass.send(:include, Explorer::Session)
@@ -44,8 +44,8 @@ RSpec.describe Explorer::Controller do
     it { expect(instance.actions).to include :go }
   end
 
-  describe '#session' do
-    include_examples 'should have reader', :session, -> { session }
+  describe '#context' do
+    include_examples 'should have reader', :context, -> { context }
   end
 
   describe '#go' do
@@ -55,7 +55,7 @@ RSpec.describe Explorer::Controller do
 
     it { expect(action).to be_a Explorer::Commands::GoDirectionCommand }
 
-    it { expect(action.context).to be session }
+    it { expect(action.context).to be context }
 
     it { expect(action.event_dispatcher).to be event_dispatcher }
   end
