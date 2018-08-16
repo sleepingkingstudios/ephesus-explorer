@@ -1,18 +1,28 @@
 # frozen_string_literal: true
 
+require 'ephesus/core/event_dispatcher'
+
 require 'explorer/commands/go_direction_command'
 require 'explorer/entities/room'
 require 'explorer/entities/room_exit'
 require 'explorer/session'
 
 RSpec.describe Explorer::Commands::GoDirectionCommand do
-  subject(:instance) { described_class.new(session) }
+  subject(:instance) do
+    described_class.new(context, event_dispatcher: event_dispatcher)
+  end
 
-  let(:session_class) { Class.new { include Explorer::Session } }
-  let(:session)       { session_class.new }
+  let(:context_class)    { Class.new { include Explorer::Session } }
+  let(:context)          { context_class.new }
+  let(:event_dispatcher) { Ephesus::Core::EventDispatcher.new }
 
   describe '::new' do
-    it { expect(described_class).to be_constructible.with(1).argument }
+    it 'should define the constructor' do
+      expect(described_class)
+        .to be_constructible
+        .with(1).argument
+        .and_keywords(:event_dispatcher)
+    end
   end
 
   describe '::NO_DIRECTION_PRESENT_ERROR' do
@@ -51,15 +61,15 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
           .to include described_class::NO_DIRECTION_PRESENT_ERROR
       end
 
-      it { expect(instance.call.value).to be session }
+      it { expect(instance.call.value).to be context }
     end
 
-    context 'when the session has no current room' do
-      before(:example) { session.current_room = nil }
+    context 'when the context has no current room' do
+      before(:example) { context.current_room = nil }
 
       it 'should raise an error' do
         expect { instance.call(direction) }
-          .to raise_error RuntimeError, 'invalid session - no current room'
+          .to raise_error RuntimeError, 'invalid context - no current room'
       end
     end
 
@@ -74,7 +84,7 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
         }
       end
 
-      before(:example) { session.current_room = current_room }
+      before(:example) { context.current_room = current_room }
 
       it { expect(instance.call(direction).success?).to be false }
 
@@ -83,11 +93,11 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
           .to include expected_error
       end
 
-      it { expect(instance.call.value).to be session }
+      it { expect(instance.call.value).to be context }
 
       it 'should not change the current room' do
         expect { instance.call(direction) }
-          .not_to change(session, :current_room)
+          .not_to change(context, :current_room)
       end
     end
 
@@ -109,7 +119,7 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
         }
       end
 
-      before(:example) { session.current_room = current_room }
+      before(:example) { context.current_room = current_room }
 
       it { expect(instance.call(direction).success?).to be false }
 
@@ -118,11 +128,11 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
           .to include expected_error
       end
 
-      it { expect(instance.call.value).to be session }
+      it { expect(instance.call.value).to be context }
 
       it 'should not change the current room' do
         expect { instance.call(direction) }
-          .not_to change(session, :current_room)
+          .not_to change(context, :current_room)
       end
     end
 
@@ -140,7 +150,7 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
       end
 
       before(:example) do
-        session.current_room = current_room
+        context.current_room = current_room
 
         matching_exit.target = nil
       end
@@ -169,7 +179,7 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
       end
 
       before(:example) do
-        session.current_room = current_room
+        context.current_room = current_room
 
         matching_exit.target = target_room
       end
@@ -178,17 +188,17 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
 
       it { expect(instance.call(direction).errors).to be_empty }
 
-      it { expect(instance.call.value).to be session }
+      it { expect(instance.call.value).to be context }
 
       it 'should set the current room' do
         expect { instance.call(direction) }
-          .to change(session, :current_room)
+          .to change(context, :current_room)
           .to(target_room)
       end
     end
   end
 
-  describe '#session' do
-    include_examples 'should have reader', :session, -> { session }
+  describe '#context' do
+    include_examples 'should have reader', :context, -> { context }
   end
 end

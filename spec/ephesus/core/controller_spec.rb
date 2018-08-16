@@ -2,6 +2,7 @@
 
 require 'ephesus/core/action'
 require 'ephesus/core/controller'
+require 'ephesus/core/event_dispatcher'
 
 RSpec.describe Ephesus::Core::Controller do
   shared_context 'when an action is defined' do
@@ -28,8 +29,9 @@ RSpec.describe Ephesus::Core::Controller do
     example_class 'Spec::ExampleActionWithArgs',
       base_class: Ephesus::Core::Action \
     do |klass|
-      klass.send :define_method, :initialize do |session, *rest|
-        super(session)
+      klass.send :define_method, :initialize \
+      do |session, *rest, event_dispatcher:|
+        super(session, event_dispatcher: event_dispatcher)
 
         @rest = *rest
       end
@@ -38,14 +40,22 @@ RSpec.describe Ephesus::Core::Controller do
     end
   end
 
-  subject(:instance) { described_class.new(session) }
+  subject(:instance) do
+    described_class.new(session, event_dispatcher: event_dispatcher)
+  end
 
-  let(:session) { Spec::ExampleSession.new }
+  let(:session)          { Spec::ExampleSession.new }
+  let(:event_dispatcher) { Ephesus::Core::EventDispatcher }
 
   example_class 'Spec::ExampleSession'
 
   describe '::new' do
-    it { expect(described_class).to be_constructible.with(1).argument }
+    it 'should define the constructor' do
+      expect(described_class)
+        .to be_constructible
+        .with(1).argument
+        .and_keywords(:event_dispatcher)
+    end
   end
 
   describe '::action' do
@@ -61,7 +71,7 @@ RSpec.describe Ephesus::Core::Controller do
 
         it { expect(action).to be_a action_class }
 
-        it { expect(action.session).to be session }
+        it { expect(action.context).to be session }
 
         wrap_context 'when the action takes arguments' do
           let(:args)   { [:ichi, 'ni', san: 3] }
@@ -71,7 +81,7 @@ RSpec.describe Ephesus::Core::Controller do
 
           it { expect(action).to be_a action_class }
 
-          it { expect(action.session).to be session }
+          it { expect(action.context).to be session }
 
           it { expect(action.rest).to be == args }
         end

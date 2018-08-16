@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/sleepingkingstudios/ephesus-core
-  revision: 2dec3d1552e7409de35fdc7521399967211ae07a
+  revision: 31d464f8789efdbc58fe12a4a90860485c692d0a
   specs:
     ephesus-core (0.1.0.alpha)
       bronze

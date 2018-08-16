@@ -11,18 +11,24 @@ module Ephesus::Core
     class << self
       def action(name, action_class)
         command(name) do |*args, &block|
-          action_class.new(session, *args, &block)
+          action_class.new(
+            session,
+            *args,
+            event_dispatcher: event_dispatcher,
+            &block
+          )
         end
       end
 
       protected :command, :command_class
     end
 
-    def initialize(session)
-      @session = session
+    def initialize(session, event_dispatcher:)
+      @session          = session
+      @event_dispatcher = event_dispatcher
     end
 
-    attr_reader :session
+    attr_reader :event_dispatcher, :session
 
     alias action? command?
     alias actions commands
