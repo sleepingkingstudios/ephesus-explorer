@@ -3,17 +3,16 @@
 require 'ephesus/core/event_dispatcher'
 
 require 'explorer/commands/go_direction_command'
+require 'explorer/context'
 require 'explorer/entities/room'
 require 'explorer/entities/room_exit'
-require 'explorer/session'
 
 RSpec.describe Explorer::Commands::GoDirectionCommand do
   subject(:instance) do
     described_class.new(context, event_dispatcher: event_dispatcher)
   end
 
-  let(:context_class)    { Class.new { include Explorer::Session } }
-  let(:context)          { context_class.new }
+  let(:context)          { Explorer::Context.new }
   let(:event_dispatcher) { Ephesus::Core::EventDispatcher.new }
 
   describe '::new' do

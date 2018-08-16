@@ -2,20 +2,16 @@
 
 require 'ephesus/core/event_dispatcher'
 
+require 'explorer/context'
 require 'explorer/controller'
-require 'explorer/session'
 
 RSpec.describe Explorer::Controller do
   subject(:instance) do
     described_class.new(context, event_dispatcher: event_dispatcher)
   end
 
-  let(:context)          { Spec::ExplorerSession.new }
+  let(:context)          { Explorer::Context.new }
   let(:event_dispatcher) { Ephesus::Core::EventDispatcher }
-
-  example_class 'Spec::ExplorerSession' do |klass|
-    klass.send(:include, Explorer::Session)
-  end
 
   describe '::new' do
     it 'should define the constructor' do
