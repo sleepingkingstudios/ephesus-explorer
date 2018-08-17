@@ -3,9 +3,9 @@
 require 'ephesus/core/event_dispatcher'
 
 require 'ephesus/explorer/contexts/navigation_context'
-require 'explorer/controller'
+require 'ephesus/explorer/controllers/navigation_controller'
 
-RSpec.describe Explorer::Controller do
+RSpec.describe Ephesus::Explorer::Controllers::NavigationController do
   subject(:instance) do
     described_class.new(context, event_dispatcher: event_dispatcher)
   end
