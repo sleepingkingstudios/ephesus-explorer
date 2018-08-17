@@ -2,11 +2,12 @@
 
 require 'bronze/entities/entity'
 
+require 'ephesus/explorer/contexts'
 require 'ephesus/explorer/entities/room'
 
-module Explorer
+module Ephesus::Explorer::Contexts
   # Context object for tracking exploration status.
-  class Context < Bronze::Entities::Entity
+  class NavigationContext < Bronze::Entities::Entity
     references_one :current_room,
       class_name: 'Ephesus::Explorer::Entities::Room',
       inverse:    nil

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'explorer/context'
+require 'ephesus/explorer/contexts/navigation_context'
 require 'ephesus/explorer/entities/room'
 
-RSpec.describe Explorer::Context do
+RSpec.describe Ephesus::Explorer::Contexts::NavigationContext do
   shared_context 'when the context has a current room' do
     let(:room) do
       Ephesus::Explorer::Entities::Room.new(name: 'example_room')
