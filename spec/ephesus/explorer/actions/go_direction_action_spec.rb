@@ -2,17 +2,17 @@
 
 require 'ephesus/core/event_dispatcher'
 
-require 'explorer/commands/go_direction_command'
-require 'explorer/context'
-require 'explorer/entities/room'
-require 'explorer/entities/room_exit'
+require 'ephesus/explorer/actions/go_direction_action'
+require 'ephesus/explorer/contexts/navigation_context'
+require 'ephesus/explorer/entities/room'
+require 'ephesus/explorer/entities/room_exit'
 
-RSpec.describe Explorer::Commands::GoDirectionCommand do
+RSpec.describe Ephesus::Explorer::Actions::GoDirectionAction do
   subject(:instance) do
     described_class.new(context, event_dispatcher: event_dispatcher)
   end
 
-  let(:context)          { Explorer::Context.new }
+  let(:context)          { Ephesus::Explorer::Contexts::NavigationContext.new }
   let(:event_dispatcher) { Ephesus::Core::EventDispatcher.new }
 
   describe '::new' do
@@ -45,7 +45,7 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
   describe '#call' do
     let(:direction) { 'east' }
     let(:matching_exit) do
-      Explorer::Entities::RoomExit.new(direction: direction)
+      Ephesus::Explorer::Entities::RoomExit.new(direction: direction)
     end
 
     it 'should define the method' do
@@ -74,7 +74,8 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
 
     context 'when the current room has no exits' do
       let(:current_room) do
-        Explorer::Entities::Room.new(name: 'example_room_with_no_exits')
+        Ephesus::Explorer::Entities::Room
+          .new(name: 'example_room_with_no_exits')
       end
       let(:expected_error) do
         {
@@ -102,12 +103,12 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
 
     context 'when the current room has no matching exits' do
       let(:current_room) do
-        Explorer::Entities::Room.new(
+        Ephesus::Explorer::Entities::Room.new(
           name:  'example_room_with_many_exits',
           exits: [
-            Explorer::Entities::RoomExit.new(direction: 'left'),
-            Explorer::Entities::RoomExit.new(direction: 'widdershins'),
-            Explorer::Entities::RoomExit.new(direction: 'antispinward')
+            Ephesus::Explorer::Entities::RoomExit.new(direction: 'left'),
+            Ephesus::Explorer::Entities::RoomExit.new(direction: 'widdershins'),
+            Ephesus::Explorer::Entities::RoomExit.new(direction: 'antispinward')
           ]
         )
       end
@@ -137,12 +138,13 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
 
     context 'when the matching exit has no target' do
       let(:current_room) do
-        Explorer::Entities::Room.new(
+        Ephesus::Explorer::Entities::Room.new(
           name:  'example_room_with_many_exits',
           exits: [
-            Explorer::Entities::RoomExit.new(direction: 'left'),
-            Explorer::Entities::RoomExit.new(direction: 'widdershins'),
-            Explorer::Entities::RoomExit.new(direction: 'antispinward'),
+            Ephesus::Explorer::Entities::RoomExit.new(direction: 'left'),
+            Ephesus::Explorer::Entities::RoomExit.new(direction: 'widdershins'),
+            Ephesus::Explorer::Entities::RoomExit
+              .new(direction: 'antispinward'),
             matching_exit
           ]
         )
@@ -163,18 +165,19 @@ RSpec.describe Explorer::Commands::GoDirectionCommand do
 
     context 'when the matching exit has a valid target' do
       let(:current_room) do
-        Explorer::Entities::Room.new(
+        Ephesus::Explorer::Entities::Room.new(
           name:  'example_room_with_many_exits',
           exits: [
-            Explorer::Entities::RoomExit.new(direction: 'left'),
-            Explorer::Entities::RoomExit.new(direction: 'widdershins'),
-            Explorer::Entities::RoomExit.new(direction: 'antispinward'),
+            Ephesus::Explorer::Entities::RoomExit.new(direction: 'left'),
+            Ephesus::Explorer::Entities::RoomExit.new(direction: 'widdershins'),
+            Ephesus::Explorer::Entities::RoomExit
+              .new(direction: 'antispinward'),
             matching_exit
           ]
         )
       end
       let(:target_room) do
-        Explorer::Entities::Room.new(name: 'target_room')
+        Ephesus::Explorer::Entities::Room.new(name: 'target_room')
       end
 
       before(:example) do

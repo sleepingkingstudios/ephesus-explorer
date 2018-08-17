@@ -1,18 +1,20 @@
 # frozen_string_literal: true
 
-require 'explorer/entities/room'
-require 'explorer/entities/room_exit'
+require 'ephesus/explorer/entities/room'
+require 'ephesus/explorer/entities/room_exit'
 
-RSpec.describe Explorer::Entities::RoomExit do
+RSpec.describe Ephesus::Explorer::Entities::RoomExit do
   shared_context 'when the exit has an origin room' do
     let(:origin) do
-      Explorer::Entities::Room.new(description: 'A non-descript origin.')
+      Ephesus::Explorer::Entities::Room
+        .new(description: 'A non-descript origin.')
     end
   end
 
   shared_context 'when the exit has a target room' do
     let(:target) do
-      Explorer::Entities::Room.new(description: 'A non-descript target.')
+      Ephesus::Explorer::Entities::Room
+        .new(description: 'A non-descript target.')
     end
   end
 

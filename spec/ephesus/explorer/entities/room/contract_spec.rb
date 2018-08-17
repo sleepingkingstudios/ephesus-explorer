@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
-require 'explorer/entities/room'
+require 'ephesus/explorer/entities/room'
 
-RSpec.describe Explorer::Entities::Room::Contract do
+RSpec.describe Ephesus::Explorer::Entities::Room::Contract do
   subject(:instance) { described_class.new }
 
   describe '#match' do
     let(:attributes) { { name: 'example_room' } }
-    let(:room)       { Explorer::Entities::Room.new(attributes.compact) }
+    let(:room) do
+      Ephesus::Explorer::Entities::Room.new(attributes.compact)
+    end
 
     it { expect(instance).to respond_to(:match).with(1).argument }
 

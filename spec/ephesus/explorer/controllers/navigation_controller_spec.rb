@@ -2,15 +2,15 @@
 
 require 'ephesus/core/event_dispatcher'
 
-require 'explorer/context'
-require 'explorer/controller'
+require 'ephesus/explorer/contexts/navigation_context'
+require 'ephesus/explorer/controllers/navigation_controller'
 
-RSpec.describe Explorer::Controller do
+RSpec.describe Ephesus::Explorer::Controllers::NavigationController do
   subject(:instance) do
     described_class.new(context, event_dispatcher: event_dispatcher)
   end
 
-  let(:context)          { Explorer::Context.new }
+  let(:context)          { Ephesus::Explorer::Contexts::NavigationContext.new }
   let(:event_dispatcher) { Ephesus::Core::EventDispatcher }
 
   describe '::new' do
@@ -49,7 +49,7 @@ RSpec.describe Explorer::Controller do
 
     it { expect(instance).to respond_to(:go).with(0).arguments }
 
-    it { expect(action).to be_a Explorer::Commands::GoDirectionCommand }
+    it { expect(action).to be_a Ephesus::Explorer::Actions::GoDirectionAction }
 
     it { expect(action.context).to be context }
 
