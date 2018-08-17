@@ -1,19 +1,25 @@
 # frozen_string_literal: true
 
+require 'ephesus/core/event_dispatcher'
+
+require 'explorer/context'
 require 'explorer/controller'
-require 'explorer/session'
 
 RSpec.describe Explorer::Controller do
-  subject(:instance) { described_class.new(session) }
-
-  let(:session) { Spec::ExplorerSession.new }
-
-  example_class 'Spec::ExplorerSession' do |klass|
-    klass.send(:include, Explorer::Session)
+  subject(:instance) do
+    described_class.new(context, event_dispatcher: event_dispatcher)
   end
 
+  let(:context)          { Explorer::Context.new }
+  let(:event_dispatcher) { Ephesus::Core::EventDispatcher }
+
   describe '::new' do
-    it { expect(described_class).to be_constructible.with(1).argument }
+    it 'should define the constructor' do
+      expect(described_class)
+        .to be_constructible
+        .with(1).argument
+        .and_keywords(:event_dispatcher)
+    end
   end
 
   describe '::action' do
@@ -34,8 +40,8 @@ RSpec.describe Explorer::Controller do
     it { expect(instance.actions).to include :go }
   end
 
-  describe '#session' do
-    include_examples 'should have reader', :session, -> { session }
+  describe '#context' do
+    include_examples 'should have reader', :context, -> { context }
   end
 
   describe '#go' do
@@ -45,6 +51,8 @@ RSpec.describe Explorer::Controller do
 
     it { expect(action).to be_a Explorer::Commands::GoDirectionCommand }
 
-    it { expect(action.session).to be session }
+    it { expect(action.context).to be context }
+
+    it { expect(action.event_dispatcher).to be event_dispatcher }
   end
 end

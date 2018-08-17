@@ -17,6 +17,16 @@ GIT
       sleeping_king_studios-tools (~> 0.7)
 
 GIT
+  remote: https://github.com/sleepingkingstudios/ephesus-core
+  revision: 31d464f8789efdbc58fe12a4a90860485c692d0a
+  specs:
+    ephesus-core (0.1.0.alpha)
+      bronze
+      cuprum (~> 0.7)
+      patina
+      sleeping_king_studios-tools (~> 0.7)
+
+GIT
   remote: https://github.com/sleepingkingstudios/sleeping_king_studios-tasks
   revision: 550f9c37dfc1645f56e53b370cdbf043a571c4df
   specs:
@@ -86,6 +96,7 @@ DEPENDENCIES
   bronze!
   byebug (~> 9.0.5, ~> 9.0)
   cuprum!
+  ephesus-core!
   patina!
   rspec (~> 3.8)
   rspec-sleeping_king_studios (~> 2.3.0)

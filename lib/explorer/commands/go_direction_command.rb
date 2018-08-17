@@ -3,12 +3,14 @@
 require 'bronze/errors'
 require 'cuprum/command'
 
-require 'explorer/commands/abstract_command'
+require 'ephesus/core/action'
+
+require 'explorer/commands'
 
 module Explorer::Commands
-  # Given an Explorer session and a direction, checks whether the current room
+  # Given an Explorer context and a direction, checks whether the current room
   # has an exit in the given direction and if so, updates the current room.
-  class GoDirectionCommand < Explorer::Commands::AbstractCommand
+  class GoDirectionCommand < Ephesus::Core::Action
     NO_DIRECTION_PRESENT_ERROR = 'must specify a direction'
     NO_MATCHING_EXIT_ERROR     = 'no matching exit'
 
@@ -31,7 +33,7 @@ module Explorer::Commands
     end
 
     def current_room
-      session.current_room
+      context.current_room
     end
 
     def find_exit(direction:)
@@ -39,19 +41,19 @@ module Explorer::Commands
     end
 
     def process(direction = nil)
-      return session unless check_direction_present?(direction)
+      return context unless check_direction_present?(direction)
 
-      raise 'invalid session - no current room' unless current_room
+      raise 'invalid context - no current room' unless current_room
 
       matching_exit = find_exit(direction: direction)
 
       unless check_matching_exit_exists?(matching_exit, direction: direction)
-        return session
+        return context
       end
 
       update_current_room(room_exit: matching_exit)
 
-      session
+      context
     end
 
     def update_current_room(room_exit:)
@@ -59,7 +61,7 @@ module Explorer::Commands
         raise "invalid room exit #{room_exit.id} - no target room"
       end
 
-      session.current_room = room_exit.target
+      context.current_room = room_exit.target
     end
   end
 end
