@@ -2,11 +2,11 @@
 
 require 'ephesus/core/controller'
 
-require 'explorer/commands/go_direction_command'
+require 'ephesus/explorer/actions/go_direction_action'
 
 module Explorer
   # Ephesus controller for navigating the game space.
   class Controller < Ephesus::Core::Controller
-    action :go, Explorer::Commands::GoDirectionCommand
+    action :go, Ephesus::Explorer::Actions::GoDirectionAction
   end
 end

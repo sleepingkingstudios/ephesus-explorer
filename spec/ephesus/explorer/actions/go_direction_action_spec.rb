@@ -2,12 +2,12 @@
 
 require 'ephesus/core/event_dispatcher'
 
-require 'explorer/commands/go_direction_command'
+require 'ephesus/explorer/actions/go_direction_action'
 require 'ephesus/explorer/contexts/navigation_context'
 require 'ephesus/explorer/entities/room'
 require 'ephesus/explorer/entities/room_exit'
 
-RSpec.describe Explorer::Commands::GoDirectionCommand do
+RSpec.describe Ephesus::Explorer::Actions::GoDirectionAction do
   subject(:instance) do
     described_class.new(context, event_dispatcher: event_dispatcher)
   end

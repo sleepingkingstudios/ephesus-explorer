@@ -49,7 +49,7 @@ RSpec.describe Explorer::Controller do
 
     it { expect(instance).to respond_to(:go).with(0).arguments }
 
-    it { expect(action).to be_a Explorer::Commands::GoDirectionCommand }
+    it { expect(action).to be_a Ephesus::Explorer::Actions::GoDirectionAction }
 
     it { expect(action.context).to be context }
 
