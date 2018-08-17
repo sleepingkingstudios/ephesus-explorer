@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'explorer'
+require 'ephesus/explorer'
 
-module Explorer
+module Ephesus::Explorer
   # Namespace for Explorer data objects.
   module Entities; end
 end

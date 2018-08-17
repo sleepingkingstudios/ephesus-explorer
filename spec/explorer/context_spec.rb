@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 require 'explorer/context'
-require 'explorer/entities/room'
+require 'ephesus/explorer/entities/room'
 
 RSpec.describe Explorer::Context do
   shared_context 'when the context has a current room' do
-    let(:room)       { Explorer::Entities::Room.new(name: 'example_room') }
+    let(:room) do
+      Ephesus::Explorer::Entities::Room.new(name: 'example_room')
+    end
     let(:attributes) { super().merge current_room: room }
   end
 

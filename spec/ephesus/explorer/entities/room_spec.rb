@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-require 'explorer/entities/room'
-require 'explorer/entities/room_exit'
+require 'ephesus/explorer/entities/room'
+require 'ephesus/explorer/entities/room_exit'
 
-RSpec.describe Explorer::Entities::Room do
+RSpec.describe Ephesus::Explorer::Entities::Room do
   shared_context 'when the room has many exits' do
     let(:exits) do
       [
-        Explorer::Entities::RoomExit.new(direction: 'north'),
-        Explorer::Entities::RoomExit.new(direction: 'east'),
-        Explorer::Entities::RoomExit.new(direction: 'south')
+        Ephesus::Explorer::Entities::RoomExit.new(direction: 'north'),
+        Ephesus::Explorer::Entities::RoomExit.new(direction: 'east'),
+        Ephesus::Explorer::Entities::RoomExit.new(direction: 'south')
       ]
     end
   end

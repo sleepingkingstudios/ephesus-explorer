@@ -1,16 +1,18 @@
 # frozen_string_literal: true
 
-require 'explorer/entities/room'
-require 'explorer/entities/room_exit'
+require 'ephesus/explorer/entities/room'
+require 'ephesus/explorer/entities/room_exit'
 
-RSpec.describe Explorer::Entities::RoomExit::Contract do
+RSpec.describe Ephesus::Explorer::Entities::RoomExit::Contract do
   subject(:instance) { described_class.new }
 
   describe '#match' do
-    let(:origin)     { Explorer::Entities::Room.new }
-    let(:target)     { Explorer::Entities::Room.new }
+    let(:origin)     { Ephesus::Explorer::Entities::Room.new }
+    let(:target)     { Ephesus::Explorer::Entities::Room.new }
     let(:attributes) { { direction: 'north', origin: origin, target: target } }
-    let(:room_exit)  { Explorer::Entities::RoomExit.new(attributes.compact) }
+    let(:room_exit) do
+      Ephesus::Explorer::Entities::RoomExit.new(attributes.compact)
+    end
 
     it { expect(instance).to respond_to(:match).with(1).argument }
 

@@ -3,9 +3,9 @@
 require 'bronze/contracts/contract'
 require 'bronze/entities/entity'
 
-require 'explorer/entities'
+require 'ephesus/explorer/entities'
 
-module Explorer::Entities
+module Ephesus::Explorer::Entities
   # A node in the graph of explorable spaces. Contains information about the
   # current location.
   class Room < Bronze::Entities::Entity
@@ -19,7 +19,7 @@ module Explorer::Entities
     attribute :name, String
 
     has_many :exits,
-      class_name: 'Explorer::Entities::RoomExit',
+      class_name: 'Ephesus::Explorer::Entities::RoomExit',
       inverse:    :origin
   end
 end

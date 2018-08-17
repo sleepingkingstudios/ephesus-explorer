@@ -3,9 +3,9 @@
 require 'bronze/contracts/contract'
 require 'bronze/entities/entity'
 
-require 'explorer/entities'
+require 'ephesus/explorer/entities'
 
-module Explorer::Entities
+module Ephesus::Explorer::Entities
   # An edge in the graph of explorable spaces. References the starting and
   # ending nodes and contains information about traversing the edge, such as the
   # direction of travel in game space.
@@ -19,9 +19,9 @@ module Explorer::Entities
     attribute :direction, String
 
     references_one :origin,
-      class_name: 'Explorer::Entities::Room',
+      class_name: 'Ephesus::Explorer::Entities::Room',
       inverse:    :exits
     references_one :target,
-      class_name: 'Explorer::Entities::Room'
+      class_name: 'Ephesus::Explorer::Entities::Room'
   end
 end
