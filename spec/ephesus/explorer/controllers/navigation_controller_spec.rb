@@ -1,47 +1,58 @@
 # frozen_string_literal: true
 
-require 'ephesus/core/event_dispatcher'
+require 'hamster'
 
-require 'ephesus/explorer/contexts/navigation_context'
+require 'ephesus/core/utils/dispatch_proxy'
 require 'ephesus/explorer/controllers/navigation_controller'
 
 RSpec.describe Ephesus::Explorer::Controllers::NavigationController do
-  subject(:instance) do
-    described_class.new(context, event_dispatcher: event_dispatcher)
+  shared_examples 'should be available' do |command_name, command_class|
+    it 'should return the command properties' do
+      expect(instance.available_commands[command_name])
+        .to be == command_class.properties
+    end
   end
 
-  let(:context)          { Ephesus::Explorer::Contexts::NavigationContext.new }
-  let(:event_dispatcher) { Ephesus::Core::EventDispatcher }
+  subject(:instance) { described_class.new(state, dispatcher: dispatcher) }
+
+  let(:state)      { Hamster::Hash.new }
+  let(:dispatcher) { instance_double(Ephesus::Core::Utils::DispatchProxy) }
 
   describe '::new' do
     it 'should define the constructor' do
       expect(described_class)
         .to be_constructible
         .with(1).argument
-        .and_keywords(:event_dispatcher)
+        .and_keywords(:dispatcher)
     end
   end
 
-  describe '::action' do
+  describe '::command' do
     it 'should define the class method' do
-      expect(described_class).to respond_to(:action).with(2).arguments
+      expect(described_class).to respond_to(:command).with(2).arguments
     end
   end
 
-  describe '#action?' do
-    it { expect(instance).to respond_to(:action?).with(1).argument }
+  describe '#available_commands' do
+    it { expect(instance.available_commands).not_to have_key :do_something }
 
-    it { expect(instance.action? :go).to be true }
+    include_examples 'should be available',
+      :go,
+      Ephesus::Explorer::Commands::GoDirection
   end
 
-  describe '#actions' do
-    include_examples 'should have reader', :actions, -> { an_instance_of Array }
+  describe '#command?' do
+    it { expect(instance).to respond_to(:command?).with(1).argument }
 
-    it { expect(instance.actions).to include :go }
+    it { expect(instance.command? :go).to be true }
   end
 
-  describe '#context' do
-    include_examples 'should have reader', :context, -> { context }
+  describe '#command' do
+    include_examples 'should have reader',
+      :commands,
+      -> { an_instance_of Array }
+
+    it { expect(instance.commands).to include :go }
   end
 
   describe '#go' do
@@ -49,10 +60,14 @@ RSpec.describe Ephesus::Explorer::Controllers::NavigationController do
 
     it { expect(instance).to respond_to(:go).with(0).arguments }
 
-    it { expect(action).to be_a Ephesus::Explorer::Actions::GoDirectionAction }
+    it { expect(action).to be_a Ephesus::Explorer::Commands::GoDirection }
 
-    it { expect(action.context).to be context }
+    it { expect(action.state).to be state }
 
-    it { expect(action.event_dispatcher).to be event_dispatcher }
+    it { expect(action.dispatcher).to be dispatcher }
+  end
+
+  describe '#state' do
+    include_examples 'should have reader', :state, -> { state }
   end
 end

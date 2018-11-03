@@ -1,35 +1,27 @@
 # frozen_string_literal: true
 
-require 'ephesus/core/event_dispatcher'
+require 'hamster'
 
-require 'ephesus/explorer/actions/go_direction_action'
-require 'ephesus/explorer/contexts/navigation_context'
+require 'ephesus/core/utils/dispatch_proxy'
+require 'ephesus/explorer/commands/go_direction'
 require 'ephesus/explorer/entities/room'
 require 'ephesus/explorer/entities/room_exit'
 
-RSpec.describe Ephesus::Explorer::Actions::GoDirectionAction do
-  subject(:instance) do
-    described_class.new(context, event_dispatcher: event_dispatcher)
-  end
+RSpec.describe Ephesus::Explorer::Commands::GoDirection do
+  subject(:instance) { described_class.new(state, dispatcher: dispatcher) }
 
-  let(:context)          { Ephesus::Explorer::Contexts::NavigationContext.new }
-  let(:event_dispatcher) { Ephesus::Core::EventDispatcher.new }
+  let(:initial_state) { { current_room: nil } }
+  let(:state)         { Hamster::Hash.new(initial_state) }
+  let(:dispatcher) do
+    instance_double(Ephesus::Core::Utils::DispatchProxy, dispatch: nil)
+  end
 
   describe '::new' do
     it 'should define the constructor' do
       expect(described_class)
         .to be_constructible
         .with(1).argument
-        .and_keywords(:event_dispatcher)
-    end
-  end
-
-  describe '::NO_DIRECTION_PRESENT_ERROR' do
-    it 'should define the constant' do
-      expect(described_class)
-        .to have_constant(:NO_DIRECTION_PRESENT_ERROR)
-        .immutable
-        .with_value('must specify a direction')
+        .and_keywords(:dispatcher)
     end
   end
 
@@ -38,8 +30,24 @@ RSpec.describe Ephesus::Explorer::Actions::GoDirectionAction do
       expect(described_class)
         .to have_constant(:NO_MATCHING_EXIT_ERROR)
         .immutable
-        .with_value('no matching exit')
+        .with_value('ephesus.explorer.commands.go_direction.no_matching_exit')
     end
+  end
+
+  describe '::properties' do
+    let(:expected) do
+      {
+        arguments: [
+          {
+            name:     :direction,
+            required: true
+          }
+        ],
+        keywords:  {}
+      }
+    end
+
+    it { expect(described_class.properties).to be == expected }
   end
 
   describe '#call' do
@@ -49,26 +57,15 @@ RSpec.describe Ephesus::Explorer::Actions::GoDirectionAction do
     end
 
     it 'should define the method' do
-      expect(instance).to respond_to(:call).with(0..1).arguments
+      expect(instance).to respond_to(:call).with(1).argument
     end
 
-    describe 'with no arguments' do
-      it { expect(instance.call.success?).to be false }
-
-      it 'should set the error' do
-        expect(instance.call.errors)
-          .to include described_class::NO_DIRECTION_PRESENT_ERROR
-      end
-
-      it { expect(instance.call.value).to be context }
-    end
-
-    context 'when the context has no current room' do
-      before(:example) { context.current_room = nil }
+    context 'when the state has no current room' do
+      let(:initial_state) { super().merge(current_room: nil) }
 
       it 'should raise an error' do
         expect { instance.call(direction) }
-          .to raise_error RuntimeError, 'invalid context - no current room'
+          .to raise_error RuntimeError, 'invalid state - no current room'
       end
     end
 
@@ -79,12 +76,11 @@ RSpec.describe Ephesus::Explorer::Actions::GoDirectionAction do
       end
       let(:expected_error) do
         {
-          type:   'no matching exit',
+          type:   described_class::NO_MATCHING_EXIT_ERROR,
           params: { direction: direction }
         }
       end
-
-      before(:example) { context.current_room = current_room }
+      let(:initial_state) { super().merge(current_room: current_room) }
 
       it { expect(instance.call(direction).success?).to be false }
 
@@ -93,11 +89,12 @@ RSpec.describe Ephesus::Explorer::Actions::GoDirectionAction do
           .to include expected_error
       end
 
-      it { expect(instance.call.value).to be context }
+      it { expect(instance.call(direction).value).to be nil }
 
-      it 'should not change the current room' do
-        expect { instance.call(direction) }
-          .not_to change(context, :current_room)
+      it 'should not dispatch an action' do
+        instance.call(direction)
+
+        expect(dispatcher).not_to have_received(:dispatch)
       end
     end
 
@@ -118,8 +115,7 @@ RSpec.describe Ephesus::Explorer::Actions::GoDirectionAction do
           params: { direction: direction }
         }
       end
-
-      before(:example) { context.current_room = current_room }
+      let(:initial_state) { super().merge(current_room: current_room) }
 
       it { expect(instance.call(direction).success?).to be false }
 
@@ -128,11 +124,12 @@ RSpec.describe Ephesus::Explorer::Actions::GoDirectionAction do
           .to include expected_error
       end
 
-      it { expect(instance.call.value).to be context }
+      it { expect(instance.call(direction).value).to be nil }
 
-      it 'should not change the current room' do
-        expect { instance.call(direction) }
-          .not_to change(context, :current_room)
+      it 'should not dispatch an action' do
+        instance.call(direction)
+
+        expect(dispatcher).not_to have_received(:dispatch)
       end
     end
 
@@ -149,10 +146,9 @@ RSpec.describe Ephesus::Explorer::Actions::GoDirectionAction do
           ]
         )
       end
+      let(:initial_state) { super().merge(current_room: current_room) }
 
       before(:example) do
-        context.current_room = current_room
-
         matching_exit.target = nil
       end
 
@@ -179,10 +175,15 @@ RSpec.describe Ephesus::Explorer::Actions::GoDirectionAction do
       let(:target_room) do
         Ephesus::Explorer::Entities::Room.new(name: 'target_room')
       end
+      let(:initial_state) { super().merge(current_room: current_room) }
+      let(:action) do
+        {
+          type: Ephesus::Explorer::Actions::SET_CURRENT_ROOM,
+          room: target_room
+        }
+      end
 
       before(:example) do
-        context.current_room = current_room
-
         matching_exit.target = target_room
       end
 
@@ -190,17 +191,17 @@ RSpec.describe Ephesus::Explorer::Actions::GoDirectionAction do
 
       it { expect(instance.call(direction).errors).to be_empty }
 
-      it { expect(instance.call.value).to be context }
+      it { expect(instance.call(direction).value).to be nil }
 
-      it 'should set the current room' do
-        expect { instance.call(direction) }
-          .to change(context, :current_room)
-          .to(target_room)
+      it 'should dispatch a SET_CURRENT_ROOM action' do
+        instance.call(direction)
+
+        expect(dispatcher).to have_received(:dispatch).with(be == action)
       end
     end
   end
 
-  describe '#context' do
-    include_examples 'should have reader', :context, -> { context }
+  describe '#state' do
+    include_examples 'should have reader', :state, -> { state }
   end
 end
