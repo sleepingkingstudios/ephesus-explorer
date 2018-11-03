@@ -3,7 +3,6 @@
 require 'hamster'
 
 require 'ephesus/core/utils/dispatch_proxy'
-require 'ephesus/explorer/contexts/navigation_context'
 require 'ephesus/explorer/controllers/navigation_controller'
 
 RSpec.describe Ephesus::Explorer::Controllers::NavigationController do

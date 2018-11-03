@@ -4,7 +4,6 @@ require 'hamster'
 
 require 'ephesus/core/utils/dispatch_proxy'
 require 'ephesus/explorer/commands/go_direction'
-require 'ephesus/explorer/contexts/navigation_context'
 require 'ephesus/explorer/entities/room'
 require 'ephesus/explorer/entities/room_exit'
 
