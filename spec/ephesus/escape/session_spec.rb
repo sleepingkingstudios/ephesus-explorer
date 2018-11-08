@@ -16,6 +16,12 @@ RSpec.describe Ephesus::Escape::Session do
     include_examples 'should have reader',
       :controller,
       -> { an_instance_of Ephesus::Explorer::Controllers::NavigationController }
+
+    describe 'command #repository' do
+      let(:command) { instance.controller.go }
+
+      it { expect(command.repository).to be == application.repository }
+    end
   end
 
   describe '#state' do

@@ -21,6 +21,8 @@ gem 'patina', git: 'https://github.com/sleepingkingstudios/bronze'
 
 gem 'zinke',  git: 'https://github.com/sleepingkingstudios/zinke'
 
+component :bronze
+
 component :core
 
 group :development, :test do

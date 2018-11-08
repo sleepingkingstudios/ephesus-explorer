@@ -5,6 +5,32 @@ require 'ephesus/escape/application'
 RSpec.describe Ephesus::Escape::Application do
   subject(:instance) { described_class.new }
 
+  describe '::new' do
+    it 'should define the constructor' do
+      expect(described_class)
+        .to be_constructible
+        .with(0).arguments
+        .and_keywords(:repository, :state)
+    end
+  end
+
+  describe '#repository' do
+    include_examples 'should have reader',
+      :repository,
+      -> { an_instance_of Patina::Collections::Simple::Repository }
+
+    context 'when initialized with a repository' do
+      let(:repository) { Spec::ExampleRepository.new }
+      let(:instance)   { described_class.new(repository: repository) }
+
+      example_class 'Spec::ExampleRepository' do |klass|
+        klass.send :include, Bronze::Collections::Repository
+      end
+
+      it { expect(instance.repository).to be repository }
+    end
+  end
+
   describe '#state' do
     let(:initial_state) do
       {

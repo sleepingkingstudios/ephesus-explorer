@@ -3,8 +3,8 @@
 require 'bronze/errors'
 require 'cuprum/command'
 
+require 'ephesus/bronze/commands/repository'
 require 'ephesus/core/command'
-
 require 'ephesus/explorer/actions'
 require 'ephesus/explorer/commands'
 
@@ -12,6 +12,8 @@ module Ephesus::Explorer::Commands
   # Given an Explorer context and a direction, checks whether the current room
   # has an exit in the given direction and if so, updates the current room.
   class GoDirection < Ephesus::Core::Command
+    include Ephesus::Bronze::Commands::Repository
+
     NO_MATCHING_EXIT_ERROR =
       'ephesus.explorer.commands.go_direction.no_matching_exit'
 

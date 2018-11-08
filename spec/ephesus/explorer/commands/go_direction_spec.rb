@@ -8,10 +8,17 @@ require 'ephesus/explorer/entities/room'
 require 'ephesus/explorer/entities/room_exit'
 
 RSpec.describe Ephesus::Explorer::Commands::GoDirection do
-  subject(:instance) { described_class.new(state, dispatcher: dispatcher) }
+  subject(:instance) do
+    described_class.new(
+      state,
+      dispatcher: dispatcher,
+      repository: repository
+    )
+  end
 
   let(:initial_state) { { current_room: nil } }
   let(:state)         { Hamster::Hash.new(initial_state) }
+  let(:repository)    { Object.new }
   let(:dispatcher) do
     instance_double(Ephesus::Core::Utils::DispatchProxy, dispatch: nil)
   end
@@ -199,6 +206,10 @@ RSpec.describe Ephesus::Explorer::Commands::GoDirection do
         expect(dispatcher).to have_received(:dispatch).with(be == action)
       end
     end
+  end
+
+  describe '#repository' do
+    include_examples 'should have reader', :repository, -> { repository }
   end
 
   describe '#state' do
