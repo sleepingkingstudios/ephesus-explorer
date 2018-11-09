@@ -7,6 +7,7 @@ require 'ephesus/bronze/commands/repository'
 require 'ephesus/core/command'
 require 'ephesus/explorer/actions'
 require 'ephesus/explorer/commands'
+require 'ephesus/explorer/commands/rooms/find_one'
 
 module Ephesus::Explorer::Commands
   # Given an Explorer context and a direction, checks whether the current room
@@ -34,7 +35,22 @@ module Ephesus::Explorer::Commands
     end
 
     def find_exit(direction:)
-      current_room.exits.find { |room_exit| room_exit.direction == direction }
+      matching_exit =
+        current_room.exits.find { |room_exit| room_exit.direction == direction }
+
+      unless check_matching_exit_exists?(matching_exit, direction: direction)
+        return
+      end
+
+      unless matching_exit.target_id
+        raise "invalid room exit #{matching_exit.id} - no target room"
+      end
+
+      matching_exit
+    end
+
+    def find_room_operation
+      Ephesus::Explorer::Commands::Rooms::FindOne.new(repository: repository)
     end
 
     def process(direction)
@@ -42,15 +58,16 @@ module Ephesus::Explorer::Commands
 
       matching_exit = find_exit(direction: direction)
 
-      unless check_matching_exit_exists?(matching_exit, direction: direction)
-        return
+      return unless matching_exit
+
+      result = find_room_operation.call(matching_exit.target_id)
+
+      unless result.success?
+        raise "invalid room exit #{matching_exit.id} - cannot find target " \
+              "room #{matching_exit.target_id}"
       end
 
-      unless matching_exit.target
-        raise "invalid room exit #{matching_exit.id} - no target room"
-      end
-
-      action = Ephesus::Explorer::Actions.set_current_room(matching_exit.target)
+      action = Ephesus::Explorer::Actions.set_current_room(result.value)
       dispatch action
     end
   end

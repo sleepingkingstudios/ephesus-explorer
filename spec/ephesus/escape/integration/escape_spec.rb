@@ -22,25 +22,41 @@ RSpec.describe Ephesus::Escape::Application do
     [
       Ephesus::Explorer::Entities::RoomExit.new(
         direction: 'north',
-        origin:    rooms[:cell],
-        target:    rooms[:antechamber]
+        origin_id: rooms[:cell].id,
+        target_id: rooms[:antechamber].id
       ),
       Ephesus::Explorer::Entities::RoomExit.new(
         direction: 'south',
-        origin:    rooms[:antechamber],
-        target:    rooms[:cell]
+        origin_id: rooms[:antechamber].id,
+        target_id: rooms[:cell].id
       )
     ]
   end
-  let(:application) { described_class.new(state: initial_state) }
-  let(:session)     { Ephesus::Escape::Session.new(application) }
+  let(:repository)  { Patina::Collections::Simple::Repository.new }
+  let(:application) do
+    described_class.new(repository: repository, state: initial_state)
+  end
+  let(:session) { Ephesus::Escape::Session.new(application) }
   let(:initial_state) do
-    {
-      current_room: rooms[:cell]
-    }
+    { current_room: find_room(rooms[:cell].id) }
   end
 
-  before(:example) { exits }
+  def find_room(room_id)
+    Ephesus::Explorer::Commands::Rooms::FindOne
+      .new(repository: repository)
+      .call(room_id)
+      .value
+  end
+
+  before(:example) do
+    rooms.each do |_name, room|
+      repository.collection(room.class).insert(room)
+    end
+
+    exits.each do |room_exit|
+      repository.collection(room_exit.class).insert(room_exit)
+    end
+  end
 
   describe '#available_commands' do
     context 'when in the cell' do
@@ -65,32 +81,26 @@ RSpec.describe Ephesus::Escape::Application do
       it { expect(application.state).to be == initial_state }
 
       describe 'entering the antechamber' do
-        let(:expected) do
-          initial_state.merge(current_room: rooms[:antechamber])
-        end
-
         it 'should update the state' do
           expect { session.execute_command :go, 'north' }
-            .to change(application, :state).to be == expected
+            .to change { application.state.get(:current_room) }
+            .to be == rooms[:antechamber]
         end
       end
     end
 
     wrap_context 'when in the antechamber' do
       let(:initial_state) do
-        super().merge(current_room: rooms[:antechamber])
+        super().merge(current_room: find_room(rooms[:antechamber].id))
       end
 
       it { expect(application.state).to be == initial_state }
 
       describe 'entering the cell' do
-        let(:expected) do
-          initial_state.merge(current_room: rooms[:cell])
-        end
-
         it 'should update the state' do
           expect { session.execute_command :go, 'south' }
-            .to change(application, :state).to be == expected
+            .to change { application.state.get(:current_room) }
+            .to be == rooms[:cell]
         end
       end
     end
