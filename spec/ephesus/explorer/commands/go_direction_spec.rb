@@ -2,16 +2,25 @@
 
 require 'hamster'
 
+require 'patina/collections/simple/repository'
+
 require 'ephesus/core/utils/dispatch_proxy'
 require 'ephesus/explorer/commands/go_direction'
 require 'ephesus/explorer/entities/room'
 require 'ephesus/explorer/entities/room_exit'
 
 RSpec.describe Ephesus::Explorer::Commands::GoDirection do
-  subject(:instance) { described_class.new(state, dispatcher: dispatcher) }
+  subject(:instance) do
+    described_class.new(
+      state,
+      dispatcher: dispatcher,
+      repository: repository
+    )
+  end
 
   let(:initial_state) { { current_room: nil } }
   let(:state)         { Hamster::Hash.new(initial_state) }
+  let(:repository)    { Patina::Collections::Simple::Repository.new }
   let(:dispatcher) do
     instance_double(Ephesus::Core::Utils::DispatchProxy, dispatch: nil)
   end
@@ -159,6 +168,38 @@ RSpec.describe Ephesus::Explorer::Commands::GoDirection do
       end
     end
 
+    context 'when the matching target room does not exist' do
+      let(:current_room) do
+        Ephesus::Explorer::Entities::Room.new(
+          name:  'example_room_with_many_exits',
+          exits: [
+            Ephesus::Explorer::Entities::RoomExit.new(direction: 'left'),
+            Ephesus::Explorer::Entities::RoomExit.new(direction: 'widdershins'),
+            Ephesus::Explorer::Entities::RoomExit
+              .new(direction: 'antispinward'),
+            matching_exit
+          ]
+        )
+      end
+      let(:target_room) do
+        Ephesus::Explorer::Entities::Room.new(name: 'target_room')
+      end
+      let(:matching_exit) do
+        Ephesus::Explorer::Entities::RoomExit.new(
+          direction: direction,
+          target_id: target_room.id
+        )
+      end
+      let(:initial_state) { super().merge(current_room: current_room) }
+
+      it 'should raise an error' do
+        expect { instance.call(direction) }
+          .to raise_error RuntimeError,
+            "invalid room exit #{matching_exit.id} - cannot find target room " \
+            "#{matching_exit.target_id}"
+      end
+    end
+
     context 'when the matching exit has a valid target' do
       let(:current_room) do
         Ephesus::Explorer::Entities::Room.new(
@@ -175,6 +216,12 @@ RSpec.describe Ephesus::Explorer::Commands::GoDirection do
       let(:target_room) do
         Ephesus::Explorer::Entities::Room.new(name: 'target_room')
       end
+      let(:matching_exit) do
+        Ephesus::Explorer::Entities::RoomExit.new(
+          direction: direction,
+          target_id: target_room.id
+        )
+      end
       let(:initial_state) { super().merge(current_room: current_room) }
       let(:action) do
         {
@@ -184,7 +231,13 @@ RSpec.describe Ephesus::Explorer::Commands::GoDirection do
       end
 
       before(:example) do
-        matching_exit.target = target_room
+        repository
+          .collection(Ephesus::Explorer::Entities::Room)
+          .insert(current_room)
+
+        repository
+          .collection(Ephesus::Explorer::Entities::Room)
+          .insert(target_room)
       end
 
       it { expect(instance.call(direction).success?).to be true }
@@ -199,6 +252,10 @@ RSpec.describe Ephesus::Explorer::Commands::GoDirection do
         expect(dispatcher).to have_received(:dispatch).with(be == action)
       end
     end
+  end
+
+  describe '#repository' do
+    include_examples 'should have reader', :repository, -> { repository }
   end
 
   describe '#state' do
