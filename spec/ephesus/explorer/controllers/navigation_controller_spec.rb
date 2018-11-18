@@ -2,16 +2,12 @@
 
 require 'hamster'
 
+require 'ephesus/core/rspec/examples/controller_examples'
 require 'ephesus/core/utils/dispatch_proxy'
 require 'ephesus/explorer/controllers/navigation_controller'
 
 RSpec.describe Ephesus::Explorer::Controllers::NavigationController do
-  shared_examples 'should be available' do |command_name, command_class|
-    it 'should return the command properties' do
-      expect(instance.available_commands[command_name])
-        .to be == command_class.properties
-    end
-  end
+  include Ephesus::Core::RSpec::Examples::ControllerExamples
 
   subject(:instance) { described_class.new(state, dispatcher: dispatcher) }
 
@@ -36,9 +32,7 @@ RSpec.describe Ephesus::Explorer::Controllers::NavigationController do
   describe '#available_commands' do
     it { expect(instance.available_commands).not_to have_key :do_something }
 
-    include_examples 'should be available',
-      :go,
-      Ephesus::Explorer::Commands::GoDirection
+    include_examples 'should have available command', :go
   end
 
   describe '#command?' do
@@ -56,15 +50,9 @@ RSpec.describe Ephesus::Explorer::Controllers::NavigationController do
   end
 
   describe '#go' do
-    let(:action) { instance.go }
-
-    it { expect(instance).to respond_to(:go).with(0).arguments }
-
-    it { expect(action).to be_a Ephesus::Explorer::Commands::GoDirection }
-
-    it { expect(action.state).to be state }
-
-    it { expect(action.dispatcher).to be dispatcher }
+    include_examples 'should define command',
+      :go,
+      Ephesus::Explorer::Commands::GoDirection
   end
 
   describe '#state' do
