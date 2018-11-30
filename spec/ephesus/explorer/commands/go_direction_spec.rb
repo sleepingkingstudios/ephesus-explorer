@@ -44,15 +44,23 @@ RSpec.describe Ephesus::Explorer::Commands::GoDirection do
   end
 
   describe '::properties' do
+    let(:arguments) do
+      [
+        {
+          name:        :direction,
+          description:
+            'The direction to go, such as "north", "east", or "outside".',
+          required:    true
+        }
+      ]
+    end
     let(:expected) do
       {
-        arguments: [
-          {
-            name:     :direction,
-            required: true
-          }
-        ],
-        keywords:  {}
+        arguments:        arguments,
+        description:      'Move in the specified direction.',
+        full_description: nil,
+        examples:         [],
+        keywords:         {}
       }
     end
 
