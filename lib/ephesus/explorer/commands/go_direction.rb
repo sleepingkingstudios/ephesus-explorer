@@ -18,7 +18,10 @@ module Ephesus::Explorer::Commands
     NO_MATCHING_EXIT_ERROR =
       'ephesus.explorer.commands.go_direction.no_matching_exit'
 
-    argument :direction
+    argument :direction,
+      description: 'The direction to go, such as "north", "east", or "outside".'
+
+    description 'Move in the specified direction.'
 
     private
 
