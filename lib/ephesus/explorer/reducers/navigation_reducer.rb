@@ -2,6 +2,7 @@
 
 require 'zinke/reducer'
 
+require 'ephesus/core/utils/immutable'
 require 'ephesus/explorer/actions'
 require 'ephesus/explorer/reducers'
 
@@ -19,7 +20,9 @@ module Ephesus::Explorer::Reducers
 
       return state unless room
 
-      state.merge(current_room: room)
+      state.merge(
+        current_room: Ephesus::Core::Utils::Immutable.from_object(room)
+      )
     end
   end
 end
