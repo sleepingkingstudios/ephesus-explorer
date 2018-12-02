@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'ephesus/core/immutable_store'
+require 'ephesus/core/utils/immutable'
 require 'ephesus/explorer/entities/room'
 require 'ephesus/explorer/reducers/navigation_reducer'
 
@@ -14,7 +15,9 @@ RSpec.describe Ephesus::Explorer::Reducers::NavigationReducer do
 
   context 'when the store dispatches SET_CURRENT_ROOM' do
     let(:action) do
-      Ephesus::Explorer::Actions.set_current_room(room)
+      normalized_room = room&.normalize(associations: { exits: true })
+
+      Ephesus::Explorer::Actions.set_current_room(normalized_room)
     end
 
     describe 'when the room is nil' do
@@ -29,11 +32,16 @@ RSpec.describe Ephesus::Explorer::Reducers::NavigationReducer do
       let(:room) do
         Ephesus::Explorer::Entities::Room.new(name: 'destination')
       end
+      let(:expected) do
+        normalized_room = room.normalize(associations: { exits: true })
+
+        Ephesus::Core::Utils::Immutable.from_object(normalized_room)
+      end
 
       it 'should update the state' do
         expect { store.dispatch(action) }
           .to change(store, :state)
-          .to(satisfy { |state| state.get(:current_room) == room })
+          .to(satisfy { |state| state.get(:current_room) == expected })
       end
     end
 
@@ -41,7 +49,11 @@ RSpec.describe Ephesus::Explorer::Reducers::NavigationReducer do
       let(:initial_room) do
         Ephesus::Explorer::Entities::Room.new(name: 'origin')
       end
-      let(:initial_state) { super().merge current_room: initial_room }
+      let(:initial_state) do
+        normalized_room = initial_room.normalize(associations: { exits: true })
+
+        super().merge current_room: normalized_room
+      end
 
       # rubocop:disable RSpec/NestedGroups
       describe 'when the room is nil' do
@@ -58,11 +70,16 @@ RSpec.describe Ephesus::Explorer::Reducers::NavigationReducer do
         let(:room) do
           Ephesus::Explorer::Entities::Room.new(name: 'destination')
         end
+        let(:expected) do
+          normalized_room = room.normalize(associations: { exits: true })
+
+          Ephesus::Core::Utils::Immutable.from_object(normalized_room)
+        end
 
         it 'should update the state' do
           expect { store.dispatch(action) }
             .to change(store, :state)
-            .to(satisfy { |state| state.get(:current_room) == room })
+            .to(satisfy { |state| state.get(:current_room) == expected })
         end
       end
       # rubocop:enable RSpec/NestedGroups

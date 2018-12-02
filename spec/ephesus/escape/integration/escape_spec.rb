@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'ephesus/core/utils/immutable'
 require 'ephesus/escape/application'
 require 'ephesus/escape/session'
 require 'ephesus/explorer/entities/room'
@@ -38,7 +39,12 @@ RSpec.describe Ephesus::Escape::Application do
   end
   let(:session) { Ephesus::Escape::Session.new(application) }
   let(:initial_state) do
-    { current_room: find_room(rooms[:cell].id) }
+    current_room    = find_room(rooms[:cell].id)
+    normalized_room = current_room&.normalize(associations: { exits: true })
+    immutable_room  =
+      Ephesus::Core::Utils::Immutable.from_object(normalized_room)
+
+    { current_room: immutable_room }
   end
 
   def find_room(room_id)
@@ -60,7 +66,7 @@ RSpec.describe Ephesus::Escape::Application do
 
   describe '#available_commands' do
     context 'when in the cell' do
-      let(:expected) { %i[go] }
+      let(:expected) { %i[go where_am_i where_can_i_go] }
 
       it 'should return the commands' do
         expect(session.available_commands.keys).to contain_exactly(*expected)
@@ -68,7 +74,7 @@ RSpec.describe Ephesus::Escape::Application do
     end
 
     wrap_context 'when in the antechamber' do
-      let(:expected) { %i[go] }
+      let(:expected) { %i[go where_am_i where_can_i_go] }
 
       it 'should return the commands' do
         expect(session.available_commands.keys).to contain_exactly(*expected)
@@ -78,29 +84,59 @@ RSpec.describe Ephesus::Escape::Application do
 
   describe '#state' do
     context 'when in the cell' do
-      it { expect(application.state).to be == initial_state }
+      let(:expected) do
+        current_room    = find_room(rooms[:cell].id)
+        normalized_room = current_room&.normalize(associations: { exits: true })
+        immutable_room  =
+          Ephesus::Core::Utils::Immutable.from_object(normalized_room)
+
+        { current_room: immutable_room }
+      end
+
+      it { expect(application.state).to be == expected }
 
       describe 'entering the antechamber' do
+        let(:expected) do
+          current_room    = find_room(rooms[:antechamber].id)
+          normalized_room =
+            current_room&.normalize(associations: { exits: true })
+
+          Ephesus::Core::Utils::Immutable.from_object(normalized_room)
+        end
+
         it 'should update the state' do
           expect { session.execute_command :go, 'north' }
             .to change { application.state.get(:current_room) }
-            .to be == rooms[:antechamber]
+            .to be == expected
         end
       end
     end
 
     wrap_context 'when in the antechamber' do
-      let(:initial_state) do
-        super().merge(current_room: find_room(rooms[:antechamber].id))
+      let(:expected) do
+        current_room    = find_room(rooms[:antechamber].id)
+        normalized_room = current_room&.normalize(associations: { exits: true })
+        immutable_room  =
+          Ephesus::Core::Utils::Immutable.from_object(normalized_room)
+
+        { current_room: immutable_room }
       end
 
-      it { expect(application.state).to be == initial_state }
+      it { expect(application.state).to be == expected }
 
       describe 'entering the cell' do
+        let(:expected) do
+          current_room    = find_room(rooms[:cell].id)
+          normalized_room =
+            current_room&.normalize(associations: { exits: true })
+
+          Ephesus::Core::Utils::Immutable.from_object(normalized_room)
+        end
+
         it 'should update the state' do
           expect { session.execute_command :go, 'south' }
             .to change { application.state.get(:current_room) }
-            .to be == rooms[:cell]
+            .to be == expected
         end
       end
     end

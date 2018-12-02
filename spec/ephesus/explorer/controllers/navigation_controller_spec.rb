@@ -33,6 +33,14 @@ RSpec.describe Ephesus::Explorer::Controllers::NavigationController do
     it { expect(instance.available_commands).not_to have_key :do_something }
 
     include_examples 'should have available command', :go
+
+    include_examples 'should have available command',
+      :where_am_i,
+      aliases: %w[where]
+
+    include_examples 'should have available command',
+      :where_can_i_go,
+      aliases: ['list exits']
   end
 
   describe '#command?' do
@@ -57,5 +65,17 @@ RSpec.describe Ephesus::Explorer::Controllers::NavigationController do
 
   describe '#state' do
     include_examples 'should have reader', :state, -> { state }
+  end
+
+  describe '#where_am_i' do
+    include_examples 'should define command',
+      :where_am_i,
+      Ephesus::Explorer::Commands::CurrentRoom
+  end
+
+  describe '#where_can_i_go' do
+    include_examples 'should define command',
+      :where_can_i_go,
+      Ephesus::Explorer::Commands::CurrentRoomExits
   end
 end

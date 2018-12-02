@@ -5,6 +5,7 @@ require 'hamster'
 require 'patina/collections/simple/repository'
 
 require 'ephesus/core/utils/dispatch_proxy'
+require 'ephesus/core/utils/immutable'
 require 'ephesus/explorer/commands/go_direction'
 require 'ephesus/explorer/entities/room'
 require 'ephesus/explorer/entities/room_exit'
@@ -18,9 +19,16 @@ RSpec.describe Ephesus::Explorer::Commands::GoDirection do
     )
   end
 
-  let(:initial_state) { { current_room: nil } }
-  let(:state)         { Hamster::Hash.new(initial_state) }
-  let(:repository)    { Patina::Collections::Simple::Repository.new }
+  let(:current_room) { nil }
+  let(:initial_state) do
+    normalized_room = current_room&.normalize(associations: { exits: true })
+    immutable_room  =
+      Ephesus::Core::Utils::Immutable.from_object(normalized_room)
+
+    { current_room: immutable_room }
+  end
+  let(:state)      { Hamster::Hash.new(initial_state) }
+  let(:repository) { Patina::Collections::Simple::Repository.new }
   let(:dispatcher) do
     instance_double(Ephesus::Core::Utils::DispatchProxy, dispatch: nil)
   end
@@ -97,7 +105,6 @@ RSpec.describe Ephesus::Explorer::Commands::GoDirection do
           params: { direction: direction }
         }
       end
-      let(:initial_state) { super().merge(current_room: current_room) }
 
       it { expect(instance.call(direction).success?).to be false }
 
@@ -132,7 +139,6 @@ RSpec.describe Ephesus::Explorer::Commands::GoDirection do
           params: { direction: direction }
         }
       end
-      let(:initial_state) { super().merge(current_room: current_room) }
 
       it { expect(instance.call(direction).success?).to be false }
 
@@ -163,7 +169,6 @@ RSpec.describe Ephesus::Explorer::Commands::GoDirection do
           ]
         )
       end
-      let(:initial_state) { super().merge(current_room: current_room) }
 
       before(:example) do
         matching_exit.target = nil
@@ -198,7 +203,6 @@ RSpec.describe Ephesus::Explorer::Commands::GoDirection do
           target_id: target_room.id
         )
       end
-      let(:initial_state) { super().merge(current_room: current_room) }
 
       it 'should raise an error' do
         expect { instance.call(direction) }
@@ -230,11 +234,10 @@ RSpec.describe Ephesus::Explorer::Commands::GoDirection do
           target_id: target_room.id
         )
       end
-      let(:initial_state) { super().merge(current_room: current_room) }
       let(:action) do
         {
           type: Ephesus::Explorer::Actions::SET_CURRENT_ROOM,
-          room: target_room
+          room: target_room.normalize(associations: { exits: true })
         }
       end
 
