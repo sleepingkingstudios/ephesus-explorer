@@ -66,7 +66,7 @@ RSpec.describe Ephesus::Escape::Application do
 
   describe '#available_commands' do
     context 'when in the cell' do
-      let(:expected) { %i[go] }
+      let(:expected) { %i[go where_am_i where_can_i_go] }
 
       it 'should return the commands' do
         expect(session.available_commands.keys).to contain_exactly(*expected)
@@ -74,7 +74,7 @@ RSpec.describe Ephesus::Escape::Application do
     end
 
     wrap_context 'when in the antechamber' do
-      let(:expected) { %i[go] }
+      let(:expected) { %i[go where_am_i where_can_i_go] }
 
       it 'should return the commands' do
         expect(session.available_commands.keys).to contain_exactly(*expected)
